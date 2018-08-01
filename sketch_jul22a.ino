@@ -4,6 +4,8 @@
  *  States include in_position, homing, touchoff, delay, and
  *  up_count.
  */
+
+#include "helper.hpp"
  
 #include <FiniteStateMachine.h>  // Include finite state machine
 #include <Button.h>              // Include Button
