@@ -23,7 +23,7 @@ State OffWait = State(OffWaitV);    // Waiting after switch is disengaged
 State UpCount = State(UpCountV);    // Moving up to position, counting steps
 
 //Controlls the states, IDK 
-void state_controller(){
+void state_controller(State state){
     while(switchPresses<=4){
         if(endstop.stateChanged()){ 
             switchPresses = ++switchPresses;
@@ -32,7 +32,7 @@ void state_controller(){
                 case 1: sightStateMachine.immediateTransitionTo(TouchOff);
                 case 2: sightStateMachine.immediateTransitionTo(OffWait);
                 case 3: sightStateMachine.immediateTransitionTo(Homing);
-                case 4: sightStateMachine.immediateTransitionTo(UpCount);
+                case 4: sightStateMachine.immediateTransitionTo(state);
                 break;
             }
         }
@@ -56,7 +56,7 @@ void setup(){
     pinMode(ENC, INPUT);
     Serial.begin(9600);
     attachInterrupt(digitalPinToInterrupt(ENC), countTicksV, CHANGE);
-    state_controller();
+    state_controller(inPos);
 }
 
 // Loop takes in serial inputs and defines target as number of ticks needed to reach the desired point on sight. Conversion formulas still need to be added in this step to convert encoder ticks to sight markings. This can be done in
@@ -72,7 +72,7 @@ void loop(){
         else{
             switchPresses = 0;
         }
-        state_controller();
+        state_controller(upCount);
         if (ticks>=target){
             sightStateMachine.immediateTransitionTo(inPos);  
         }
