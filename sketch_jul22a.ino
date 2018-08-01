@@ -28,38 +28,38 @@ State OffWait = State(OffWaitV);    // Waiting after switch is disengaged
 State UpCount = State(UpCountV);    // Moving up to position, counting steps
 
 if(endstop.isPressed()){
-	FSM sightStateMachine = FSM(TouchOff);     //initialize state machine
-	switchPresses = 1; 
+    FSM sightStateMachine = FSM(TouchOff);     //initialize state machine
+    switchPresses = 1; 
 }
 else{
-	FSM sightStateMachine = FSM(Homing);     //initialize state machine
+    FSM sightStateMachine = FSM(Homing);     //initialize state machine
 }
 
 // Setup declares pin modes necessary for motor driver shield channel A, the endstop, and the interrupt pin, and begins serial communication.
 // It then runs through the homing process, calling each function as the endstop is pressed and unpressed.
 
 void setup(){
-	pinMode(MOTOR_BREAK,OUTPUT);  //Motor brake pin
-	pinMode(MOTOR_DIR,OUTPUT);    // Motor direction pin
-	pinMode(ENDSTOP,INPUT);       // Endstop pin 4
-	pinMode(ENC,INPUT);
+    pinMode(MOTOR_BREAK,OUTPUT);  //Motor brake pin
+    pinMode(MOTOR_DIR,OUTPUT);    // Motor direction pin
+    pinMode(ENDSTOP,INPUT);       // Endstop pin 4
+    pinMode(ENC,INPUT);
   
-	Serial.begin(9600);
-	attachInterrupt(digitalPinToInterrupt(enc_pin), countTicksV, CHANGE);
+    Serial.begin(9600);
+    attachInterrupt(digitalPinToInterrupt(enc_pin), countTicksV, CHANGE);
 
-	while(switchPresses<=4){
-		if(endstop.stateChanged()){ 
-			switchPresses = ++switchPresses;
-			switch(switchPresses){
-				case 0: sightStateMachine.immediateTransitionTo(Homing);
-				case 1: sightStateMachine.immediateTransitionTo(TouchOff);
-				case 2: sightStateMachine.immediateTransitionTo(OffWait);
-				case 3: sightStateMachine.immediateTransitionTo(Homing);
-				case 4: sightStateMachine.immediateTransitionTo(inPos);
-				break;
-		  	}
-		}
-	}
+    while(switchPresses<=4){
+        if(endstop.stateChanged()){ 
+            switchPresses = ++switchPresses;
+            switch(switchPresses){
+                case 0: sightStateMachine.immediateTransitionTo(Homing);
+                case 1: sightStateMachine.immediateTransitionTo(TouchOff);
+                case 2: sightStateMachine.immediateTransitionTo(OffWait);
+                case 3: sightStateMachine.immediateTransitionTo(Homing);
+                case 4: sightStateMachine.immediateTransitionTo(inPos);
+                break;
+            }
+        }
+    }
 }
 
 // Loop takes in serial inputs and defines target as number of ticks needed to reach the desired point on sight. Conversion formulas still need to be added in this step to convert encoder ticks to sight markings. This can be done in
@@ -67,29 +67,29 @@ void setup(){
 // The first if statement defines switchPresses depending on if the endstop switch is currently pressed or not. This defines the initial switch case in the upcoming switch function. The state machine cycles through the cases until UpCount which
 // begins moving the sight up to its desired position. The final if statement transitions the state machine to inPos to stop the sight in the target position once the desired amount of encoder ticks have been reached.
 void loop(){
-	if (Serial.available()){
-		target = Serial.read();
-		if(isPressed(endstop)){
-			switchPresses = 1; 
-		}
-		else{
-			switchPresses = 0;
-		}
-		while(switchPresses<=4){
-			if(endstop.stateChanged()){ 
-				switchPresses = ++switchPresses;
-				switch(switchPresses){
-		  			case 0: sightStateMachine.immediateTransitionTo(Homing);
-		  			case 1: sightStateMachine.immediateTransitionTo(TouchOff);
-		  			case 2: sightStateMachine.immediateTransitionTo(OffWait);
-		  			case 3: sightStateMachine.immediateTransitionTo(Homing);
-		  			case 4: sightStateMachine.immediateTransitionTo(UpCount);
-		  			break;
-		  		}
-			}
-		}
-		if (ticks>=target){
-			sightStateMachine.immediateTransitionTo(inPos);  
-		}
-	}  
+    if (Serial.available()){
+        target = Serial.read();
+        if(isPressed(endstop)){
+            switchPresses = 1; 
+        }
+        else{
+            switchPresses = 0;
+        }
+        while(switchPresses<=4){
+            if(endstop.stateChanged()){ 
+                switchPresses = ++switchPresses;
+                switch(switchPresses){
+                    case 0: sightStateMachine.immediateTransitionTo(Homing);
+                    case 1: sightStateMachine.immediateTransitionTo(TouchOff);
+                    case 2: sightStateMachine.immediateTransitionTo(OffWait);
+                    case 3: sightStateMachine.immediateTransitionTo(Homing);
+                    case 4: sightStateMachine.immediateTransitionTo(UpCount);
+                    break;
+                }
+            }
+        }
+        if (ticks>=target){
+            sightStateMachine.immediateTransitionTo(inPos);  
+        }
+    }  
 }
