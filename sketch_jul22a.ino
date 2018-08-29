@@ -14,6 +14,7 @@ Button endstop = Button(ENDSTOP, PULLUP); //initialize the button (wire between 
 byte switchPresses = 0;            //counter variable, holds number of button presses 
 unsigned long ticks = 0; //initializes counter variable for encoder
 int target = 0;            //number of steps required
+FSM sightStateMachine;
  
 //initialize states
 State inPos = State(inPosV);        // At some position, waiting for new command
@@ -44,11 +45,11 @@ void state_controller(State state){
 void setup(){
     //initialize state machine
     if(endstop.isPressed()){
-        FSM sightStateMachine = FSM(TouchOff);
+        sightStateMachine = FSM(TouchOff);
         switchPresses = 1; 
     }
     else{
-        FSM sightStateMachine = FSM(Homing);
+        sightStateMachine = FSM(Homing);
     }
     pinMode(MOTOR_BREAK, OUTPUT);
     pinMode(MOTOR_DIR, OUTPUT);
